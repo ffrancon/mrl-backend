@@ -1,3 +1,4 @@
+const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 
@@ -5,6 +6,9 @@ const connectDatabase = require('./config/db');
 
 // Connect Database
 connectDatabase();
+
+// Init middleware
+app.use(express.json({ extended: false }));
  
 app.get('/', (req, res) => {
   res.send('OK');
