@@ -18,8 +18,7 @@ const getUser = async req => {
     return {
       success: false,
       errors: ['SERVER_ERROR'],
-      data,
-      token
+      data
     };
   }
 }
