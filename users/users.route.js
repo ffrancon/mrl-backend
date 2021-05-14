@@ -7,9 +7,7 @@ const service = require('./users.service');
 // @desc    Register user
 // @access  Public
 router.post('/', [
-  body('username', 'Name is required')
-    .not()
-    .isEmpty(),
+  body('username', 'Name is required').notEmpty(),
   body('email', 'Please enter a valid email')
     .isEmail()
     .normalizeEmail(),
