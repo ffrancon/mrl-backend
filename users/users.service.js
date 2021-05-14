@@ -57,7 +57,7 @@ const registerUser = async (req) => {
     }
     await generateToken(payload, config.get('jwtSecret'), 3600)
       .then(res => token = res)
-      .catch(err => {console.error(err)});
+      .catch(err => console.error(err));
 
     return { success, errors, data, token };
   } 
