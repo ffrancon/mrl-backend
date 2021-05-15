@@ -25,7 +25,6 @@ const authenticateUser = async req => {
     // Response object init
     let success = true;
     let errors = [];
-    let data = [];
     let token = '';
 
     // Get user from db
@@ -34,7 +33,7 @@ const authenticateUser = async req => {
       return {
         success: false,
         errors: ['USER_DOESNOT_EXIST'],
-        data
+        token
       }
     }
 
@@ -44,11 +43,9 @@ const authenticateUser = async req => {
       return {
         success: false,
         errors: ['INVALID_CREDENTIALS'],
-        data
+        token
       }
     }
-
-    data.push(user);
 
     // Return jsonwebtoken
     const payload = {
@@ -60,14 +57,13 @@ const authenticateUser = async req => {
       .then(res => token = res)
       .catch(err => console.error(err));
 
-    return { success, errors, data, token };
+    return { success, errors, token };
   }
   catch(err) {
     console.error(err.message);
     return {
       success: false,
       errors: ['SERVER_ERROR'],
-      data,
       token
     };
   }
