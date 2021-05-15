@@ -10,13 +10,10 @@ connectDatabase();
 // Init middleware
 app.use(express.json({ extended: false }));
  
-app.get('/', (req, res) => {
-  res.send('OK');
-});
-
 // Define routes
 app.use('/api/users', require('./users/users.route'));
 app.use('/api/auth', require('./auth/auth.route'));
+app.use('/api/books', require('./books/books.route'));
 
 const port = process.env.PORT || 3000;
 
