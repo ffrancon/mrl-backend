@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const BookSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
+    required: true
   },
   name: {
     type: String,
