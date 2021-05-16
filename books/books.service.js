@@ -4,12 +4,12 @@ const Book = require('./Book.model');
 const addBook = async (req) => {
   const { name, author, genre } = req.body;
 
-  try {
-    // Response object init
-    let success = true;
-    let errors = [];
-    let data = [];
+  // Response object init
+  let success = true;
+  let errors = [];
+  let data = [];
 
+  try {
     // Check if book exists in the user's list
     let book = await Book.findOne({ name, author, owner: req.user.id });
     if (book) {
@@ -28,13 +28,25 @@ const addBook = async (req) => {
     });
 
     // Save book
-    await book.save();
-    data.push(book);
+    let bookCreationSuccess = true;
+    await book.save()
+      .then(() => {
+        data.push(book);
+      })
+      .catch(err => {
+        console.error(err);
+        bookCreationSuccess = false;
+      });
+    
+    // If book add failed, throw error
+    if (!bookCreationSuccess) {
+      throw 'Book add failed';
+    }
 
     return { success, errors, data };
   }
   catch(err) {
-    console.error(err.message);
+    console.error(err);
     return {
       success: false,
       errors: ['SERVER_ERROR'],

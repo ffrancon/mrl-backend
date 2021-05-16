@@ -21,11 +21,12 @@ const generateToken = (payload, secret, expiresIn) => {
 const authenticateUser = async req => {
   const { email, password } = req.body;
 
+  // Response object init
+  let success = true;
+  let errors = [];
+  let token = '';
+
   try {
-    // Response object init
-    let success = true;
-    let errors = [];
-    let token = '';
 
     // Get user from db
     const user = await User.findOne({ email });
@@ -60,7 +61,7 @@ const authenticateUser = async req => {
     return { success, errors, token };
   }
   catch(err) {
-    console.error(err.message);
+    console.error(err);
     return {
       success: false,
       errors: ['SERVER_ERROR'],
