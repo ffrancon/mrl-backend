@@ -1,8 +1,9 @@
+const mongoose = require('mongoose');
 const Book = require('./Book.model');
 
 // Add book in logged user's list
 const addBook = async (req) => {
-  const { name, author, genre } = req.body;
+  const { name, author, genre, listId } = req.body;
 
   // Response object init
   let success = true;
@@ -24,7 +25,8 @@ const addBook = async (req) => {
       name,
       author,
       genre,
-      owner: req.user.id
+      owner: req.user.id,
+      list: mongoose.Types.ObjectId(listId)
     });
 
     // Save book
