@@ -34,9 +34,7 @@ const registerUser = async (req) => {
     if (user) {
       return { 
         success: false,
-        errors: ['USER_ALREADY_EXISTS'],
-        data,
-        token
+        errors: ['USER_ALREADY_EXISTS']
       }
     }
 
@@ -47,23 +45,22 @@ const registerUser = async (req) => {
     user.password = await bcrypt.hash(password, salt);
 
     // Save user
-    let userCreationSuccess = true;
+    let userCreationState = { success: true, error: ' '};
     await user.save()
       .then(() => {
         data.push(user);
       })
       .catch(err => {
-        console.error(err);
-        userCreationSuccess = false;
+        userCreationState = { success: false, error: err };
       });
     
     // If user creation failed, throw error
-    if (!userCreationSuccess) {
-      throw 'User creation failed';
+    if (!userCreationState) {
+      throw userCreationState.error;
     }
 
     // Create reading lists associated to user
-    let listCreationSuccess = true;
+    let listCreationState = { success: true, erorr: '' };
     const lists = [
       { owner: user.id, category: 'toRead' },
       { owner: user.id, category: 'reading' },
@@ -71,16 +68,15 @@ const registerUser = async (req) => {
     ];
     await List.insertMany(lists,{ ordered: true })
       .catch(err => {
-          console.error(err);
-          listCreationSuccess = false;
+          listCreationState = { success: false, error: err };
       });
 
     // If lists creation failed, remove user and throw error
-    if (!listCreationSuccess) {
+    if (!listCreationState) {
       await User.findOneAndDelete({ _id: user.id })
         .then(() => data = [])
         .catch(err => console.error(err));
-      throw 'Lists creation failed';
+      throw listCreationState.error;
     }
 
     // Return jsonwebtoken
@@ -99,9 +95,7 @@ const registerUser = async (req) => {
     console.error(err);
     return {
       success: false,
-      errors: ['SERVER_ERROR'],
-      data,
-      token
+      errors: ['SERVER_ERROR']
     };
   }
 }

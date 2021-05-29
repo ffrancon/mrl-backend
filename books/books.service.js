@@ -16,8 +16,7 @@ const addBook = async (req) => {
     if (book) {
       return { 
         success: false,
-        errors: ['BOOK_ALREADY_EXISTS'],
-        data
+        errors: ['BOOK_ALREADY_EXISTS']
       }
     }
 
@@ -30,19 +29,18 @@ const addBook = async (req) => {
     });
 
     // Save book
-    let bookCreationSuccess = true;
+    let bookCreationState = { success: true, error: '' };
     await book.save()
       .then(() => {
         data.push(book);
       })
       .catch(err => {
-        console.error(err);
-        bookCreationSuccess = false;
+        bookCreationState = { success: false, error: err };
       });
     
     // If book add failed, throw error
-    if (!bookCreationSuccess) {
-      throw 'Book add failed';
+    if (!bookCreationState) {
+      throw bookCreationState.error;
     }
 
     return { success, errors, data };
@@ -51,8 +49,7 @@ const addBook = async (req) => {
     console.error(err);
     return {
       success: false,
-      errors: ['SERVER_ERROR'],
-      data
+      errors: ['SERVER_ERROR']
     };
   }
 }
@@ -76,8 +73,7 @@ const getBooks = async (req) => {
     console.error(err.message);
     return {
       success: false,
-      errors: ['SERVER_ERROR'],
-      data
+      errors: ['SERVER_ERROR']
     };
   }
 }
