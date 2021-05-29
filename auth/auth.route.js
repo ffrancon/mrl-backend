@@ -20,7 +20,7 @@ router.post(
     if (result.success) {
       // Send auth cookie
       res.cookie('mrl_token', result.token, {
-        secure: process.env.NODE_ENV !== 'dev',
+        secure: process.env.ENV !== 'dev',
         httpOnly: true,
         expires: new Date(Date.now() + 900000)
       });

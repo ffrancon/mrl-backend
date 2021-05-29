@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('config');
 
 const User = require('../users/User.model');
 
@@ -55,7 +54,7 @@ const authenticateUser = async req => {
         id: user.id
       }
     }
-    await generateToken(payload, config.get('jwtSecret'), 3600)
+    await generateToken(payload, process.env.JWT_SECRET, 3600)
       .then(res => token = res)
       .catch(err =>  {
         tokenCreationState = { success: false, error: err };
