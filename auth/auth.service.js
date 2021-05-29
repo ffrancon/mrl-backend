@@ -25,16 +25,15 @@ const authenticateUser = async req => {
   let success = true;
   let errors = [];
   let token = '';
+  let data = [];
 
   try {
-
     // Get user from db
     const user = await User.findOne({ email });
     if (!user) {
       return {
         success: false,
-        errors: ['USER_DOESNOT_EXIST'],
-        token
+        errors: ['USER_DOESNOT_EXIST']
       }
     }
 
@@ -43,12 +42,14 @@ const authenticateUser = async req => {
     if (!isMatch) {
       return {
         success: false,
-        errors: ['INVALID_CREDENTIALS'],
-        token
+        errors: ['INVALID_CREDENTIALS']
       }
     }
 
+    data.push({ userId: user.id });
+
     // Return jsonwebtoken
+    let tokenCreationState = { success: true, error: '' };
     const payload = {
       user: {
         id: user.id
@@ -56,16 +57,22 @@ const authenticateUser = async req => {
     }
     await generateToken(payload, config.get('jwtSecret'), 3600)
       .then(res => token = res)
-      .catch(err => console.error(err));
+      .catch(err =>  {
+        tokenCreationState = { success: false, error: err };
+      });
 
-    return { success, errors, token };
+    // If token generation failed, throw error
+    if (!tokenCreationState.success) {
+      throw tokenCreationState.error;
+    }
+
+    return { success, errors, data, token };
   }
   catch(err) {
     console.error(err);
     return {
       success: false,
-      errors: ['SERVER_ERROR'],
-      token
+      errors: ['SERVER_ERROR']
     };
   }
 }

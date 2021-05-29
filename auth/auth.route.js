@@ -18,7 +18,17 @@ router.post(
     const result = await service.authenticateUser(req);
 
     if (result.success) {
-      res.status(200).send(result);
+      // Send auth cookie
+      res.cookie('mrl_token', JSON.stringify({ token: result.token }), {
+        secure: process.env.NODE_ENV !== 'dev',
+        httpOnly: true,
+        expires: new Date(Date.now() + 900000)
+      });
+      res.status(200).send({ 
+        success: result.success, 
+        errors: result.errors, 
+        data: result.data 
+      });
     }
     else if (!result.success
       && result.errors.includes('USER_DOESNOT_EXIST')
