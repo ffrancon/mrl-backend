@@ -31,8 +31,8 @@ router.post(
       });
     }
     else if (!result.success
-      && result.errors.includes('USER_DOESNOT_EXIST')
-      && result.errors.includes('INVALID_CREDENTIALS')) {
+      && (result.errors.includes('USER_DOESNOT_EXIST')
+      || result.errors.includes('INVALID_CREDENTIALS'))) {
       res.status(400).send(result);
     }
     else if (!result.success && result.errors.includes('SERVER_ERROR')) {
