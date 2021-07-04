@@ -17,6 +17,17 @@ const generateToken = (payload, secret, expiresIn) => {
   });
 }
 
+const checkToken = async req => {
+  // Get token from header
+  const token = req.header('x-auth-token');
+
+  return {
+    success: true,
+    token: token,
+    data: [{ userId: req.user.id }]
+  }
+}
+
 const authenticateUser = async req => {
   const { email, password } = req.body;
 
@@ -76,4 +87,4 @@ const authenticateUser = async req => {
   }
 }
 
-module.exports = { authenticateUser };
+module.exports = { authenticateUser, checkToken };

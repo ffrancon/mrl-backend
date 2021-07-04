@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
+const { body } = require('express-validator');
+const auth = require('../middleware/auth');
 const service = require('./auth.service');
 
 // @route  POST api/auth
 // @desc   Authenticate user and get token
 // @access public
 router.post(
-  '/',
+  '/login',
   [ 
     body('email', 'Please enter a valid email')
     .isEmail()
@@ -18,15 +19,10 @@ router.post(
     const result = await service.authenticateUser(req);
 
     if (result.success) {
-      // Send auth cookie
-      res.cookie('mrl_token', result.token, {
-        secure: process.env.ENV !== 'dev',
-        httpOnly: true,
-        expires: new Date(Date.now() + 900000)
-      });
       res.status(200).send({ 
         success: result.success, 
-        errors: result.errors, 
+        errors: result.errors,
+        token: result.token,
         data: result.data 
       });
     }
@@ -38,6 +34,19 @@ router.post(
     else if (!result.success && result.errors.includes('SERVER_ERROR')) {
       res.status(500).send(result);
     }
+});
+
+// @route  GET api/checkjwt
+// @desc   Verify jwt
+// @access public
+router.get('/checkjwt', auth, async (req, res) => {
+  const result = await service.checkToken(req);
+
+  res.status(200).send({
+    success: result.success,
+    token: result.token,
+    data: result.data
+  });
 });
 
 module.exports = router;
